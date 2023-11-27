@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>CBE96DB7-BD64-4940-9F0C-274321BD00A9</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Antelcat.Parameterization.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Attributes\ArgumentAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Attributes\CommandAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Attributes\ParameterizationAttribute.cs" />
+  </ItemGroup>
+</Project>

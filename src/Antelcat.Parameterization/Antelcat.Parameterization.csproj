@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <LangVersion>preview</LangVersion>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <None Remove="Antelcat.Parameterization.csproj.DotSettings" />
+    </ItemGroup>
+
+    <Import Project="..\Antelcat.Parameterization.Shared\Antelcat.Parameterization.Shared.projitems" Label="Shared" />
+
+</Project>
