@@ -18,13 +18,42 @@ public class CommonGenerator : ISourceGenerator
 			#nullable enable
 			using System;
 			using System.Collections.Generic;
+			using System.Text.RegularExpressions;
 
 			namespace Antelcat.Parameterization
 			{
 				public class CommandNotFoundException(string commandName) : Exception($"Command \"{commandName}\" not found.") { }
-			
-				public static class Utils
+				
+				public struct ParsedArgument
 				{
+					public string Name { get; }
+					
+					public object? Value { 
+						get => value;
+						set 
+						{
+							this.value = value;
+							hasValue = true;
+						}
+					}
+					
+					public bool HasValue => hasValue;
+					
+					private object? value;
+					private bool hasValue;
+					
+					public ParsedArgument(string name)
+					{
+						Name = name;
+					}
+				}
+			
+				public static class Common
+				{
+					public static Regex CommandRegex { get; } = new Regex(@"[^\s""]+|""([^""]|(\\""))*""");
+					public static Regex ArgumentRegex { get; } = new Regex(@"[^,""]+|""([^""]|(\\""))*""");
+					public static Regex QuotationRegex { get; } = new Regex(@"^""|""$");
+				
 					internal static int FindIndexOf<T>(this IReadOnlyList<T> list, Predicate<T> predicate) {
 						for (var i = 0; i < list.Count; i++) {
 							if (predicate(list[i])) {
@@ -35,25 +64,28 @@ public class CommonGenerator : ISourceGenerator
 						return -1;
 					}
 			
-					/// <param name="commandAndArguments"></param>
+					/// <param name="arguments"></param>
 					/// <param name="parameterNames"></param>
-					/// <param name="isParameterBoolean"></param>
 					/// <param name="argumentConverters"></param>
 					/// <exception cref="ArgumentException"></exception>
-					public static object?[] ParseArguments(
-						IReadOnlyList<string> commandAndArguments,
+					public static ParsedArgument[] ParseArguments(
+						IReadOnlyList<string> arguments,
 						IReadOnlyList<(string fullName, string? shortName)> parameterNames,
-						IReadOnlyList<bool> isParameterBoolean,
+						IReadOnlyList<string?> defaultValues,
 						IReadOnlyList<{{Global.TypeConverter}}> argumentConverters)
 					{
-						var arguments = new object?[parameterNames.Count];
+						var results = new ParsedArgument[parameterNames.Count];
+						for (var i = 0; i < results.Length; i++)
+						{
+							results[i] = new ParsedArgument(parameterNames[i].fullName);
+						}
 			
 						var isNamedArgumentUsed = false;
-						for (var i = 1; i < commandAndArguments.Count; i++)
+						for (var i = 1; i < arguments.Count; i++)
 						{
 							var argumentIndex = -1;
-							var argument = commandAndArguments[i];
-			
+							var argument = arguments[i];
+							
 							if (argument.StartsWith("--"))
 							{
 								argument = argument[2..];
@@ -76,71 +108,53 @@ public class CommonGenerator : ISourceGenerator
 							}
 							else if (isNamedArgumentUsed)
 							{
-								throw new ArgumentException("Named arguments must come after all anonymous arguments.");
+								throw new ArgumentException("Named results must come after all anonymous results.");
+							}
+							
+							if ((argumentIndex != -1 && results[argumentIndex].HasValue) || 
+								(argumentIndex == -1 && results[i - 1].HasValue))
+							{
+								throw new ArgumentException($"Argument \"{argument}\" is duplicated.");
 							}
 			
 							if (argumentIndex != -1)
 							{
 								// 当前是命名参数，那么下一个才是参数的值
-								if (i == commandAndArguments.Count - 1 || commandAndArguments[i + 1].StartsWith('-'))
+								if (i == arguments.Count - 1 || arguments[i + 1].StartsWith('-'))
 								{
 									// 如果没有下一个参数，或者下一个参数是命名参数
-									if (!isParameterBoolean[argumentIndex])
+									if (defaultValues[argumentIndex] == null)
 									{
-										// 如果当前参数不是bool，那么就是缺少值
-										throw new ArgumentException("Named argument must be followed by a value except bool.");
+										throw new ArgumentException($"The value of argument \"{argument}\" is not specified.");
 									}
-			
-									arguments[argumentIndex] = true;
+									
+									results[argumentIndex].Value = argumentConverters[argumentIndex].ConvertFromString(defaultValues[argumentIndex]);
 									continue;
 								}
 			
-								argument = commandAndArguments[++i];
+								argument = arguments[++i];
 							}
 							else
 							{
 								argumentIndex = i - 1;
 							}
 			
-							arguments[argumentIndex] = argumentConverters[argumentIndex].ConvertFromString(argument);
-			
-							// if (parameterType.IsGenericType && parameterType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
-							// {
-							// 	var parts = new List<object?>();
-							// 	foreach (Match match in Regex.Matches(argument, @"[^,""]+|""([^""]|(\\""))*"""))
-							// 	{
-							// 		parts.Add(ConvertArgument(Regex.Replace(match.Value, @"^""|""$", "").Replace("\\\"", "\"")));
-							// 	}
-							//
-							// 	// TODO: 构造参数类型的数组并传参
-							// }
-							// else
-							// {
-							// 	arguments[argumentIndex] = ConvertArgument(argument);
-							// }
-							//
-							// object? ConvertArgument(string argumentString)
-							// {
-							// 	if (attributes[argumentIndex] is { Converter: not null } argumentAttribute)
-							// 	{
-							// 		if (Activator.CreateInstance(argumentAttribute.Converter) is not StringConverter converter)
-							// 		{
-							// 			throw new ArgumentException(
-							// 				$"Converter \"{argumentAttribute.Converter}\" must derive from System.ComponentModel.StringConverter.");
-							// 		}
-							// 		return converter.ConvertFromString(argumentString);
-							// 	}
-							//
-							// 	if (parameterType == typeof(string))
-							// 	{
-							// 		return argumentString;
-							// 	}
-							//
-							// 	return TypeDescriptor.GetConverter(parameterType.ParameterType).ConvertFromString(argumentString);
-							// }
+							results[argumentIndex].Value = argumentConverters[argumentIndex].ConvertFromString(argument);
 						}
 			
-						return arguments;
+						return results;
+					}
+					
+					public static T ConvertArgument<T>(ParsedArgument parsed)
+					{
+						if (!parsed.HasValue) throw new ArgumentException($"Argument \"{parsed.Name}\" is not specified.");
+						return parsed.Value is T result ? result : throw new ArgumentException($"Argument \"{parsed.Name}\" is not of type {typeof(T).FullName}.");
+					}
+					
+					public static T ConvertArgument<T>(ParsedArgument parsed, T defaultValue) 
+					{
+						if (!parsed.HasValue) return defaultValue;
+						return parsed.Value is T result ? result : throw new ArgumentException($"Argument \"{parsed.Name}\" is not of type {typeof(T).FullName}.");
 					}
 				}
 			}

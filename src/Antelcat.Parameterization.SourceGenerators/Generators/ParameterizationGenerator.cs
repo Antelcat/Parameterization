@@ -181,22 +181,29 @@ public class ParameterizationGenerator : ClassAttributeBaseGenerator
 									x.Item1?[nameof(ArgumentAttribute.ShortName)] as string
 								))
 								.Select(x => $"new {Global.ValueTuple}<{Global.String}, {Global.String}?>({x.Item1.Escape()}, {x.Item2.Escape()})"))} }};")
-						.AppendLine($"var isBoolean = new {Global.Boolean}[] {{ {string.Join(", ",
-							methodParameters
-								.Select(parameter => parameter.Type is PredefinedTypeSyntax { Keyword.Text: "bool" })
-								.Select(b => b ? "true" : "false"))} }};") // TODO: Default Converter而不是bool硬编码
+						.AppendLine($"var defaultValues = new {Global.String}?[] {{ {string.Join(", ",
+							parameterAttributes
+								.Select(x => x?[nameof(ArgumentAttribute.DefaultValue)] as string)
+								.Select(x => x == null ? "null" : $"\"{x}\""))} }};")
 						.AppendLine($"var argumentConverters = new {Global.TypeConverter}[] {{ {string.Join(", ",
 							parameterAttributes.Zip(methodParameters)
 								.Select(x => x.Item1?[nameof(ArgumentAttribute.Converter)] is TypeSyntax converterType
 									? convertersMap[syntaxContext.SemanticModel.GetSymbolInfo(converterType).Symbol.NotNull<ITypeSymbol>()]
 									: convertersMap[syntaxContext.SemanticModel.GetSymbolInfo(x.Item2.Type.NotNull()).Symbol.NotNull<ITypeSymbol>()])
-								.Select(name => $"{Global.Namespace}.Converters.{name}Converter"))} }};")
-						.AppendLine($"var args = global::{Global.Namespace}.Utils.ParseArguments(commandAndArguments, names, isBoolean, argumentConverters);")
+								.Select(name => $"{Global.GlobalNamespace}.Converters.{name}Converter"))} }};")
+						.AppendLine(
+							$"var args = {Global.GlobalNamespace}.Common.ParseArguments(arguments, names, defaultValues, argumentConverters);")
 						.AppendLine($"{method.Identifier.ValueText}({string.Join(", ",
 							methodParameters
-								.Select(p => p.Type.ToDisplayName(syntaxContext.SemanticModel).NotNull())
+								.Select(p =>
+								(
+									typeName: p.Type.ToDisplayName(syntaxContext.SemanticModel).NotNull(),
+									defaultValue: p.Default?.Value.ToString()
+								))
 								.WithIndex()
-								.Select(x => $"({x.Item2})args[{x.Item1}]"))});");
+								.Select(x =>
+									$"{Global.GlobalNamespace}.Common.ConvertArgument<{x.value.typeName}>(args[{x.index}]{(
+										x.value.defaultValue == null ? string.Empty : $", {x.value.defaultValue}")})"))});");
 				}
 				else
 				{
@@ -219,32 +226,37 @@ public class ParameterizationGenerator : ClassAttributeBaseGenerator
 				$$""""
 				  {{classAccessModifier}} {{(isClassStatic ? "static" : string.Empty)}} partial class {{className}}
 				  {
-				  	private static void ExecuteInput(global::System.String? input)
+				  	private static void ExecuteInput({{Global.String}}? input)
 				  	{
-				  		if (global::System.String.IsNullOrEmpty(input))
+				  		if ({{Global.String}}.IsNullOrEmpty(input))
 				  		{
 				  		    return;
 				  		}
 				  
-				  		var commandAndArguments = new global::System.Collections.Generic.List<global::System.String>();
-				  		foreach (global::System.Text.RegularExpressions.Match match in global::System.Text.RegularExpressions.Regex.Matches(input, @"[^\s""]+|""([^""]|(\\""))*"""))
+				  		var arguments = new {{Global.GenericList}}<{{Global.String}}>();
+				  		foreach ({{Global.Match}} match in {{Global.GlobalNamespace}}.Common.CommandRegex.Matches(input))
 				  		{
 				  		    var part = match.Value;
-				  		    part = global::System.Text.RegularExpressions.Regex.Replace(part, @"^""|""$", "").Replace("\\\"", "\""){{(caseSensitive ? "" : ".ToLower()")}};
-				  		    commandAndArguments.Add(part);
+				  		    part = {{Global.GlobalNamespace}}.Common.QuotationRegex.Replace(part, "").Replace("\\\"", "\""){{(caseSensitive ? "" : ".ToLower()")}};
+				  		    arguments.Add(part);
 				  		}
 				  
-				  		if (commandAndArguments.Count == 0)
+				  		ExecuteArguments(arguments);
+				  	}
+				  	
+				  	private static void ExecuteArguments({{Global.GenericIReadonlyList}}<{{Global.String}}> arguments)
+				  	{
+				  		if (arguments.Count == 0)
 				  		{
 				  		    return;
 				  		}
 				  
-				  		switch (commandAndArguments[0])
+				  		switch (arguments[0])
 				  		{
 				  {{caseBuilder}}
-				  		    default:
+				  			default:
 				  		    {
-				  				throw new global::System.ArgumentException($"Command \"{commandAndArguments[0]}\" not found.");
+				  				throw new {{Global.ArgumentException}}($"Command \"{arguments[0]}\" not found.");
 				  		    }
 				  		}
 				  	}
@@ -262,7 +274,7 @@ public class ParameterizationGenerator : ClassAttributeBaseGenerator
 		}
 
 		context.AddSource(
-			$"{Global.Namespace}.Converters.g.cs", 
+			$"{Global.Namespace}.Converters.g.cs",
 			converterBuilder.OutDent().AppendLine("}").OutDent().AppendLine("}").ToString());
 	}
 }

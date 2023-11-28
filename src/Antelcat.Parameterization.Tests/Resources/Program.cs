@@ -36,7 +36,7 @@ namespace Antelcat.Parameterization.Tests
 			int arg2,
 			DateTime arg3,
 			double arg4 = 114.514d,
-			bool arg5 = false,
+			[Argument(DefaultValue = "true")] bool arg5 = false,
 			[Argument(Converter = typeof(CustomTypeConverter))]
 			CustomType? arg6 = null,
 			int arg7 = 0,
@@ -68,7 +68,7 @@ namespace Antelcat.Parameterization.Tests
 			public override object? ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object? value)
 			{
 				if (value is not string str) return null;
-				var parts = str.Split(';');
+				var parts = str.Split(',');
 				return new CustomType
 				{
 					Name = parts[0],

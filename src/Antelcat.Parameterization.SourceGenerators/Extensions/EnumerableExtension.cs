@@ -17,7 +17,7 @@ public static class EnumerableExtension {
 	/// <param name="startIndex"></param>
 	/// <param name="step"></param>
 	/// <returns></returns>
-	public static IEnumerable<ValueTuple<int, T>> WithIndex<T>(
+	public static IEnumerable<(int index, T value)> WithIndex<T>(
 		this IEnumerable<T> enumerable, 
 		int startIndex = 0,
 		int step = 1) {

@@ -14,5 +14,10 @@ public class ArgumentAttribute : Attribute
 	/// <summary>
 	/// Must derive from <see cref="System.ComponentModel.StringConverter"/>
 	/// </summary>
+	/// <remarks>
+	/// It's better to use a <see cref="System.ComponentModel.TypeConverterAttribute"/> on your custom type.
+	/// </remarks>
 	public Type? Converter { get; set; }
+	
+	public string? DefaultValue { get; set; }
 }
