@@ -9,10 +9,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Antelcat.Parameterization\Antelcat.Parameterization.csproj" />
-      <ProjectReference Include="..\Antelcat.Parameterization.SourceGenerators\Antelcat.Parameterization.SourceGenerators.csproj"
-                        OutputItemType="Analyzer"
-                        ReferenceOutputAssembly="false" />
+        <ProjectReference Include="..\Antelcat.Parameterization\Antelcat.Parameterization.csproj"/>
+        <ProjectReference Include="..\Antelcat.Parameterization.SourceGenerators\Antelcat.Parameterization.SourceGenerators.csproj"
+                          OutputItemType="Analyzer"
+                          ReferenceOutputAssembly="false"/>
     </ItemGroup>
 
 </Project>

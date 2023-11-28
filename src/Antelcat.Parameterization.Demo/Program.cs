@@ -22,7 +22,7 @@ public static partial class Program
 				}
 			}
 		}
-		
+
 		try
 		{
 			ExecuteArguments(args);
@@ -32,19 +32,19 @@ public static partial class Program
 			Console.WriteLine(e.Message);
 		}
 	}
-	
+
 	private static readonly HashSet<Image> DownloadedImages = new();
 	private static readonly HashSet<Container> Containers = new();
 
 	[Command(ShortName = "ps", Description = "Display a list of container(s) resources usage statistics")]
 	private static void Stats(
-		[Argument(FullName = "all", ShortName = "a", Description = "Show all containers (default shows just running)")] 
+		[Argument(FullName = "all", ShortName = "a", Description = "Show all containers (default shows just running)", DefaultValue = "true")]
 		bool showAll = false)
 	{
-		Console.WriteLine("CONTAINER ID	IMAGE	NAME	STATUS");
+		Console.WriteLine("CONTAINER ID    IMAGE    NAME    STATUS");
 		foreach (var container in Containers.Where(container => showAll || container.IsRunning))
 		{
-			Console.WriteLine($"{container.Id}	{container.Image}	{container.Name}	{(container.IsRunning ? "running" : "stopped")}");
+			Console.WriteLine($"{container.Id}    {container.Image}    {container.Name}    {(container.IsRunning ? "running" : "stopped")}");
 		}
 	}
 
@@ -56,7 +56,7 @@ public static partial class Program
 			Console.WriteLine($"Image {image} already pulled.");
 			return;
 		}
-		
+
 		Console.WriteLine($"Pulling image {image}...");
 		for (var i = 0; i < 10; i++)
 		{

@@ -23,11 +23,11 @@ public static class SyntaxExtension
 		};
 		return attributeLists.SelectMany(attributeList => attributeList.Attributes);
 	}
-	
+
 	public static IEnumerable<AttributeSyntax> GetSpecifiedAttributes(
-		this SyntaxNode syntax, 
+		this SyntaxNode syntax,
 		SemanticModel semanticModel,
-		string attributeFullName, 
+		string attributeFullName,
 		CancellationToken cancellationToken = default)
 	{
 		foreach (var attributeSyntax in syntax.GetAllAttributes())
@@ -38,7 +38,7 @@ public static class SyntaxExtension
 			if (attributeName == attributeFullName) yield return attributeSyntax;
 		}
 	}
-	
+
 	/// <summary>
 	/// 获取一个Type下面的所有指定的Attribute
 	/// </summary>
@@ -48,7 +48,7 @@ public static class SyntaxExtension
 	/// <typeparam name="T"></typeparam>
 	/// <returns></returns>
 	public static IEnumerable<AttributeProxy> GetSpecifiedAttributes<T>(
-		this SyntaxNode syntax, 
+		this SyntaxNode syntax,
 		SemanticModel semanticModel,
 		CancellationToken cancellationToken = default)
 		where T : Attribute
@@ -61,7 +61,7 @@ public static class SyntaxExtension
 			yield return new AttributeProxy(attribute);
 		}
 	}
-	
+
 	public static bool IsDerivedFrom<T>(this ITypeSymbol? typeSymbol)
 	{
 		var targetTypeFullName = typeof(T).FullName;

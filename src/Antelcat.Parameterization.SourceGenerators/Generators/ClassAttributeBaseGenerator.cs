@@ -25,6 +25,7 @@ public abstract class ClassAttributeBaseGenerator : IIncrementalGenerator
 		context.RegisterSourceOutput(provider.Collect(), GenerateCode);
 	}
 
-	protected abstract void GenerateCode(SourceProductionContext context,
+	protected abstract void GenerateCode(
+		SourceProductionContext context,
 		ImmutableArray<(GeneratorAttributeSyntaxContext, AttributeSyntax)> targets);
 }

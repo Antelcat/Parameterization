@@ -28,8 +28,8 @@ public class ParameterizationGenerator : ClassAttributeBaseGenerator
 
 				namespace Antelcat.Parameterization
 				{
-					public static class Converters
-					{
+				    public static class Converters
+				    {
 				""")
 			.Indent(2);
 
@@ -226,40 +226,40 @@ public class ParameterizationGenerator : ClassAttributeBaseGenerator
 				$$""""
 				  {{classAccessModifier}} {{(isClassStatic ? "static" : string.Empty)}} partial class {{className}}
 				  {
-				  	private static void ExecuteInput({{Global.String}}? input)
-				  	{
-				  		if ({{Global.String}}.IsNullOrEmpty(input))
-				  		{
-				  		    return;
-				  		}
+				      private static void ExecuteInput({{Global.String}}? input)
+				      {
+				          if ({{Global.String}}.IsNullOrEmpty(input))
+				          {
+				              return;
+				          }
 				  
-				  		var arguments = new {{Global.GenericList}}<{{Global.String}}>();
-				  		foreach ({{Global.Match}} match in {{Global.GlobalNamespace}}.Common.CommandRegex.Matches(input))
-				  		{
-				  		    var part = match.Value;
-				  		    part = {{Global.GlobalNamespace}}.Common.QuotationRegex.Replace(part, "").Replace("\\\"", "\""){{(caseSensitive ? "" : ".ToLower()")}};
-				  		    arguments.Add(part);
-				  		}
+				          var arguments = new {{Global.GenericList}}<{{Global.String}}>();
+				          foreach ({{Global.Match}} match in {{Global.GlobalNamespace}}.Common.CommandRegex.Matches(input))
+				          {
+				              var part = match.Value;
+				              part = {{Global.GlobalNamespace}}.Common.QuotationRegex.Replace(part, "").Replace("\\\"", "\""){{(caseSensitive ? "" : ".ToLower()")}};
+				              arguments.Add(part);
+				          }
 				  
-				  		ExecuteArguments(arguments);
-				  	}
-				  	
-				  	private static void ExecuteArguments({{Global.GenericIReadonlyList}}<{{Global.String}}> arguments)
-				  	{
-				  		if (arguments.Count == 0)
-				  		{
-				  		    return;
-				  		}
+				          ExecuteArguments(arguments);
+				      }
+				      
+				      private static void ExecuteArguments({{Global.GenericIReadonlyList}}<{{Global.String}}> arguments)
+				      {
+				          if (arguments.Count == 0)
+				          {
+				              return;
+				          }
 				  
-				  		switch (arguments[0])
-				  		{
+				          switch (arguments[0])
+				          {
 				  {{caseBuilder}}
-				  			default:
-				  		    {
-				  				throw new {{Global.ArgumentException}}($"Command \"{arguments[0]}\" not found.");
-				  		    }
-				  		}
-				  	}
+				              default:
+				              {
+				                  throw new {{Global.ArgumentException}}($"Command \"{arguments[0]}\" not found.");
+				              }
+				          }
+				      }
 				  }
 				  """");
 
