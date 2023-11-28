@@ -18,13 +18,13 @@
 
    命令：
 
-   ```
+   ```bash
    > pull ubuntu
    ```
 
    输出：
 
-   ```
+   ```bash
    Pulling image ubuntu:latest...
    Successfully Pulled image ubuntu:latest
    ```
@@ -35,13 +35,13 @@
 
    命令：
 
-   ```
+   ```bash
    > run ubuntu
    ```
 
    输出：
 
-   ```
+   ```bash
    ubuntu:latest ubuntu running
    ```
 
@@ -51,14 +51,14 @@
 
    命令：
 
-   ```
+   ```bash
    > ps
    ```
 
    输出：
 
-   ```
-   CONTAINER ID    IMAGE           NAME    STATUS
+   ```bash
+   CONTAINER_ID    IMAGE           NAME    STATUS
    00a57dbe        ubuntu:latest   ubuntu  running
    ```
 
@@ -66,7 +66,7 @@
 
    命令：
 
-   ```
+   ```bash
    > stop
    > stop 00a57dbe
    > run --name "my container" --image kali
@@ -74,7 +74,7 @@
 
    输出：
 
-   ```
+   ```bash
    Argument "id" is not specified.
    Stopping container 00a57dbe...
    Pulling image kali:latest...
@@ -88,14 +88,14 @@
 
    命令：
 
-   ```
+   ```bash
    > ps --all
    ```
 
    输出：
 
-   ```
-   CONTAINER ID    IMAGE           NAME          STATUS
+   ```bash
+   CONTAINER_ID    IMAGE           NAME          STATUS
    00a57dbe        ubuntu:latest   ubuntu        stopped
    0419fcea        kali:latest     my container  running
    ```
@@ -116,8 +116,8 @@
 
   2. 按照以下方式引用 `Antelcat.Parameterization` 和 `Antelcat.Parameterization.SourceGenerators`。
 
-     ```
-     xmlCopy code<ItemGroup>
+     ```xml
+     <ItemGroup>
          <ProjectReference Include="..\Antelcat.Parameterization\Antelcat.Parameterization.csproj"/>
          <ProjectReference Include="..\Antelcat.Parameterization.SourceGenerators\Antelcat.Parameterization.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
      </ItemGroup>

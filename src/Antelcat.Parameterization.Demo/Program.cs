@@ -41,7 +41,7 @@ public static partial class Program
 		[Argument(FullName = "all", ShortName = "a", Description = "Show all containers (default shows just running)", DefaultValue = "true")]
 		bool showAll = false)
 	{
-		Console.WriteLine("CONTAINER ID    IMAGE    NAME    STATUS");
+		Console.WriteLine("CONTAINER_ID    IMAGE    NAME    STATUS");
 		foreach (var container in Containers.Where(container => showAll || container.IsRunning))
 		{
 			Console.WriteLine($"{container.Id}    {container.Image}    {container.Name}    {(container.IsRunning ? "running" : "stopped")}");

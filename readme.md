@@ -18,13 +18,13 @@ The [Demo Program](https://github.com/Antelcat/Antelcat.Parameterization/blob/ma
 
    Command:
 
-   ```
+   ```bash
    > pull ubuntu
    ```
 
    Output:
 
-   ```
+   ```bash
    Pulling image ubuntu:latest...
    Successfully Pulled image ubuntu:latest
    ```
@@ -35,13 +35,13 @@ The [Demo Program](https://github.com/Antelcat/Antelcat.Parameterization/blob/ma
 
    Command:
 
-   ```
+   ```bash
    > run ubuntu
    ```
 
    Output:
 
-   ```
+   ```bash
    ubuntu:latest ubuntu running
    ```
 
@@ -51,14 +51,14 @@ The [Demo Program](https://github.com/Antelcat/Antelcat.Parameterization/blob/ma
 
    Command:
 
-   ```
+   ```bash
    > ps
    ```
 
    Output:
 
-   ```
-   CONTAINER ID    IMAGE           NAME    STATUS
+   ```bash
+   CONTAINER_ID    IMAGE           NAME    STATUS
    00a57dbe        ubuntu:latest   ubuntu  running
    ```
 
@@ -66,7 +66,7 @@ The [Demo Program](https://github.com/Antelcat/Antelcat.Parameterization/blob/ma
 
    Commands:
 
-   ```
+   ```bash
    > stop
    > stop 00a57dbe
    > run --name "my container" --image kali
@@ -74,7 +74,7 @@ The [Demo Program](https://github.com/Antelcat/Antelcat.Parameterization/blob/ma
 
    Output:
 
-   ```
+   ```bash
    Argument "id" is not specified.
    Stopping container 00a57dbe...
    Pulling image kali:latest...
@@ -88,14 +88,14 @@ The [Demo Program](https://github.com/Antelcat/Antelcat.Parameterization/blob/ma
 
    Command:
 
-   ```
+   ```bash
    > ps --all
    ```
 
    Output:
 
-   ```
-   CONTAINER ID    IMAGE           NAME          STATUS
+   ```bash
+   CONTAINER_ID    IMAGE           NAME          STATUS
    00a57dbe        ubuntu:latest   ubuntu        stopped
    0419fcea        kali:latest     my container  running
    ```
