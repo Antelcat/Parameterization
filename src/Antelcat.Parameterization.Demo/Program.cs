@@ -1,4 +1,9 @@
-﻿using Antelcat.Parameterization.Demo.Models;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Globalization;
+using System.Linq;
+using System.Threading;
 
 namespace Antelcat.Parameterization.Demo;
 
@@ -97,5 +102,52 @@ public static partial class Program
 	private static void Exit()
 	{
 		Environment.Exit(0);
+	}
+}
+
+public class ImageConverter : StringConverter
+{
+	public override object ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object? value)
+	{
+		if (value is not string str) throw new ArgumentException("Invalid image string format");
+		var args = str.Split(':');
+		return args switch
+		{
+			{ Length: 1 } => new Image(str, null),
+			{ Length: 2 } => new Image(args[0], Version.Parse(args[1])),
+			_ => throw new ArgumentException("Invalid image string format")
+		};
+	}
+}
+
+public class Container(Image image, string id, string name, bool isRunning)
+{
+	public override int GetHashCode()
+	{
+		return Id.GetHashCode();
+	}
+
+	public virtual bool Equals(Container? other)
+	{
+		return other != null && Id == other.Id;
+	}
+
+	public override string ToString()
+	{
+		return $"{Image} {Name} {(IsRunning ? "running" : "stopped")}";
+	}
+
+	public Image Image { get; } = image;
+	public string Id { get; } = id;
+	public string Name { get; init; } = name;
+	public bool IsRunning { get; set; } = isRunning;
+}
+
+[TypeConverter(typeof(ImageConverter))]
+public record Image(string Name, Version? Version)
+{
+	public override string ToString()
+	{
+		return $"{Name}:{Version?.ToString() ?? "latest"}";
 	}
 }

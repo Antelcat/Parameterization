@@ -2,15 +2,9 @@
 
 namespace Antelcat.Parameterization.SourceGenerators.Generators;
 
-[Generator]
-public class CommonGenerator : ISourceGenerator
+public static class CommonGenerator
 {
-	public void Initialize(GeneratorInitializationContext context)
-	{
-
-	}
-
-	public void Execute(GeneratorExecutionContext context)
+	public static void Execute(in SourceProductionContext context)
 	{
 		context.AddSource($"{Global.Namespace}.Common.g.cs",
 			$$""""
@@ -123,12 +117,13 @@ public class CommonGenerator : ISourceGenerator
 			                      if (i == arguments.Count - 1 || arguments[i + 1].StartsWith('-'))
 			                      {
 			                          // 如果没有下一个参数，或者下一个参数是命名参数
-			                          if (defaultValues[argumentIndex] == null)
+			                          var defaultValue = defaultValues[argumentIndex];
+			                          if (defaultValue == null)
 			                          {
 			                              throw new ArgumentException($"The value of argument \"{argument}\" is not specified.");
 			                          }
 			                          
-			                          results[argumentIndex].Value = argumentConverters[argumentIndex].ConvertFromString(defaultValues[argumentIndex]);
+			                          results[argumentIndex].Value = argumentConverters[argumentIndex].ConvertFromString(defaultValue);
 			                          continue;
 			                      }
 			  

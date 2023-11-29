@@ -45,23 +45,10 @@ public class ParameterizationGeneratorTests
             RuntimeMetadataReferences,
             new CSharpCompilationOptions(OutputKind.ConsoleApplication)) as Compilation;
         
-        var commonDriver = CSharpGeneratorDriver.Create(new CommonGenerator());
-        commonDriver.RunGeneratorsAndUpdateCompilation(compilation, out compilation, out var diagnostics);
+        var parameterizationDriver = CSharpGeneratorDriver.Create(new ParameterizationGenerator());
+        parameterizationDriver.RunGeneratorsAndUpdateCompilation(compilation, out compilation, out var diagnostics);
         
         var runErrors = diagnostics
-            .Where(diagnostic => diagnostic.Severity == DiagnosticSeverity.Error)
-            .Select(diagnostic => new Exception(diagnostic.ToString()))
-            .ToList();
-
-        if (runErrors.Count > 0)
-        {
-            throw new AggregateException($"{nameof(CommonGenerator)} Error", runErrors);
-        }
-        
-        var parameterizationDriver = CSharpGeneratorDriver.Create(new ParameterizationGenerator());
-        parameterizationDriver.RunGeneratorsAndUpdateCompilation(compilation, out compilation, out diagnostics);
-        
-        runErrors = diagnostics
             .Where(diagnostic => diagnostic.Severity == DiagnosticSeverity.Error)
             .Select(diagnostic => new Exception(diagnostic.ToString()))
             .ToList();

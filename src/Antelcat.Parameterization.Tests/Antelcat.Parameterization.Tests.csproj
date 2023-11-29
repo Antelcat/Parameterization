@@ -28,7 +28,8 @@
 
     <ItemGroup>
       <Compile Remove="Resources\Program.cs" />
-      <None Include="Resources\Program.cs">
+      <None Include="..\Antelcat.Parameterization.Demo\Program.cs">
+        <Link>Resources/Program.cs</Link>
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
     </ItemGroup>

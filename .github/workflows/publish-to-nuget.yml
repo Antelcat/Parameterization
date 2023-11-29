@@ -1,0 +1,39 @@
+name: Publish to NuGet
+
+on:
+  push:
+    branches: 
+      - master
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore
+      working-directory: ./src
+
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+      working-directory: ./src
+
+    - name: Test
+      run: dotnet test --no-restore --verbosity normal
+      working-directory: ./src
+
+    - name: Pack
+      run: dotnet pack --configuration Release --no-build --output nupkgs
+      working-directory: ./src
+
+    - name: Publish
+      run: dotnet nuget push "./Antelcat.Parameterization/bin/Release/*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+      if: github.ref == 'refs/heads/master'
+      working-directory: ./src
