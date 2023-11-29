@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.InteropServices;
 using Antelcat.Parameterization.SourceGenerators.Generators;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -25,8 +26,7 @@ public class ParameterizationGeneratorTests
     {
         get
         {
-            const string runtimePath = @"C:\Program Files\dotnet\shared\Microsoft.NETCore.App\6.0.25";
-            var runtimeFiles = Directory.EnumerateFiles(runtimePath, "*.dll");
+            var runtimeFiles = Directory.EnumerateFiles(RuntimeEnvironment.GetRuntimeDirectory(), "*.dll");
             foreach (var assemblyPath in runtimeFiles.Where(TryReadAssembly))
             {
                 yield return MetadataReference.CreateFromFile(assemblyPath);
