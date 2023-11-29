@@ -106,9 +106,9 @@
 
 ## 安装
 
-- #### 🚧 通过 Nuget
+- **通过Nuget（✨推荐）**
 
-  Nuget 包正在开发中
+  已经上传到 [Nuget](https://www.nuget.org/packages/Antelcat.Parameterization)，可通过Nuget CLI或者你最喜欢的IDE安装。
 
 - **通过源代码**
 

@@ -4,15 +4,16 @@
         <TargetFramework>netstandard2.0</TargetFramework>
         <LangVersion>preview</LangVersion>
         <Nullable>enable</Nullable>
-        <Version>1.0.0</Version>
+        <Version>1.0.1</Version>
         <Company>Antelcat</Company>
-        <AssemblyVersion>1.0.0</AssemblyVersion>
-        <FileVersion>1.0.0</FileVersion>
+        <AssemblyVersion>1.0.1</AssemblyVersion>
+        <FileVersion>1.0.1</FileVersion>
         <Title>Effortless Command-Line Application Builder</Title>
         <Description>A powerful source generator designed to revolutionize the way you create command-line applications. This tool simplifies the process of building CLI applications by automatically generating parsing methods with just attribute marking on classes and methods.</Description>
         <PackageProjectUrl>https://github.com/Antelcat/Antelcat.Parameterization</PackageProjectUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageIcon>images\logo.jpg</PackageIcon>
+        <PackageIcon>logo.jpg</PackageIcon>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
         <RepositoryUrl>https://github.com/Antelcat/Antelcat.Parameterization</RepositoryUrl>
         <PackageTags>cli command-line efficiency cli-app source-generator</PackageTags>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -31,6 +32,11 @@
         <None Include="..\Antelcat.Parameterization.SourceGenerators\bin\$(Configuration)\netstandard2.0\Antelcat.Parameterization.SourceGenerators.dll">
             <Pack>True</Pack>
             <PackagePath>analyzers\dotnet\cs</PackagePath>
+        </None>
+        
+        <None Include="..\..\README.md">
+            <Pack>True</Pack>
+            <PackagePath>/</PackagePath>
         </None>
     </ItemGroup>
 

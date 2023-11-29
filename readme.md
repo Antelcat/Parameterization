@@ -106,9 +106,9 @@ The [Demo Program](https://github.com/Antelcat/Antelcat.Parameterization/blob/ma
 
 ## Installation
 
-- #### 🚧 Via Nuget
+- **Via Nuget (✨Recommanded)**
 
-  Nuget package is on the way
+  Uploaded to [Nuget](https://www.nuget.org/packages/Antelcat.Parameterization). You can install via nuget CLI or your favorite IDE.
 
 - **Via source code**
 
@@ -132,7 +132,7 @@ We welcome contributions to this project! Whether it's reporting bugs, suggestin
 
 ## TODO
 
-- [ ] Nuget package.
+- [x] Nuget package.
 - [ ] Automatically generate help documents.
 
 - [ ] Check for excess parameters.
