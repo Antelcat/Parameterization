@@ -2,8 +2,8 @@
 
 public static class StringExtension
 {
-	public static string Escape(this string? s)
-	{
-		return s == null ? "null" : $"\"{s.Replace("\"", "\\\"")}\"";
-	}
+    public static string Escape(this string? s)
+    {
+        return s == null ? "null" : $"\"{s.Replace("\"", "\\\"")}\"";
+    }
 }

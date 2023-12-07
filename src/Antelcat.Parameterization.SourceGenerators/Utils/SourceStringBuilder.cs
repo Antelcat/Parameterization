@@ -11,31 +11,9 @@ public class SourceStringBuilder
     private int currentIndentCount;
     private bool isLineStart = true;
 
-    public SourceStringBuilder(string indentString = "\t", int indentCount = 1, int initialIndentCount = 0, int capacity = 16)
+    public SourceStringBuilder(string indentString = "    ", int initialIndentCount = 0, int capacity = 16)
     {
-        switch (indentCount)
-        {
-            case <= 0:
-            {
-                throw new ArgumentOutOfRangeException(nameof(indentCount));
-            }
-            case 1:
-            {
-                this.indentString = indentString;
-                break;
-            }
-            default:
-            {
-                var builder = new StringBuilder(indentString.Length * indentCount);
-                for (var i = 0; i < indentCount; i++)
-                {
-                    builder.Append(indentString);
-                }
-
-                this.indentString = builder.ToString();
-                break;
-            }
-        }
+        this.indentString = indentString;
 
         if (initialIndentCount < 0) throw new ArgumentOutOfRangeException(nameof(initialIndentCount));
         currentIndentCount = initialIndentCount;
@@ -73,7 +51,7 @@ public class SourceStringBuilder
                 AppendIndent();
                 stringBuilder.AppendLine(line);
                 isLineStart = true;
-            }    
+            }
         }
 
         return this;
@@ -92,7 +70,7 @@ public class SourceStringBuilder
 
         stringBuilder.Append(value);
         isLineStart = value == '\n';
-        
+
         return this;
     }
 

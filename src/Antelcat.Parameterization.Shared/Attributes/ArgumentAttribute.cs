@@ -13,7 +13,7 @@ public class ArgumentAttribute : Attribute
 	/// <summary>
 	/// ShortName switch, e.g. -n
 	/// </summary>
-	public string? ShortName { get; set; }
+	public char ShortName { get; set; }
 
 	public string? Description { get; set; }
 

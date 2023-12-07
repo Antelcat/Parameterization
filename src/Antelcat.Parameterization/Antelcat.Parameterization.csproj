@@ -4,7 +4,7 @@
         <TargetFramework>netstandard2.0</TargetFramework>
         <LangVersion>preview</LangVersion>
         <Nullable>enable</Nullable>
-        <Version>1.0.1</Version>
+        <Version>1.1.0</Version>
         <Company>Antelcat</Company>
         <AssemblyVersion>1.0.1</AssemblyVersion>
         <FileVersion>1.0.1</FileVersion>

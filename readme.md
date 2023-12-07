@@ -133,7 +133,7 @@ We welcome contributions to this project! Whether it's reporting bugs, suggestin
 ## TODO
 
 - [x] Nuget package.
+- [x] Multiple parameters, use `T[]`.
 - [ ] Automatically generate help documents.
-
 - [ ] Check for excess parameters.
 - [ ] Parameter combination, e.g. `-it` will both open `-i` and `-t`.
