@@ -4,13 +4,14 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Antelcat.Parameterization.Demo;
 
 [Parameterization]
 public static partial class Program
 {
-	public static void Main(string[] args)
+	public static async Task Main(string[] args)
 	{
 		if (args.Length == 0)
 		{
@@ -19,7 +20,7 @@ public static partial class Program
 			{
 				try
 				{
-					ExecuteInput(Console.ReadLine());
+					await ExecuteInputAsync(Console.ReadLine());
 				}
 				catch (Exception e)
 				{
@@ -30,7 +31,7 @@ public static partial class Program
 
 		try
 		{
-			ExecuteArguments(args);
+			await ExecuteArgumentsAsync(args);
 		}
 		catch (Exception e)
 		{
@@ -87,7 +88,7 @@ public static partial class Program
 	}
 
 	[Command]
-	private static void Stop(string id)
+	private static Task Stop(string id)
 	{
 		var container = Containers.FirstOrDefault(container => container.Id == id);
 		if (container == null)
@@ -99,6 +100,8 @@ public static partial class Program
 			Console.WriteLine($"Stopping container {id}...");
 			container.IsRunning = false;
 		}
+
+		return Task.CompletedTask;
 	}
 
 	[Command(ShortName = "e")]

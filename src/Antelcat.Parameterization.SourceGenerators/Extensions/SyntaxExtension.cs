@@ -83,4 +83,22 @@ public static class SyntaxExtension
     {
         return semanticModel.GetSymbolInfo(syntax).Symbol is IArrayTypeSymbol;
     }
+    
+    public static bool IsAwaitable(this TypeSyntax type, SemanticModel semanticModel)
+    {
+        if (semanticModel.GetSymbolInfo(type).Symbol is not ITypeSymbol symbol) return false;
+        
+        var fullName = symbol.ToDisplayString();
+        if (fullName == "System.Threading.Tasks.Task" ||
+            fullName.StartsWith("System.Threading.Tasks.Task<") ||
+            fullName == "System.Threading.Tasks.ValueTask" ||
+            fullName.StartsWith("System.Threading.Tasks.ValueTask<"))
+        {
+            return true;
+        }
+
+        var notifyCompletionInterface = symbol.AllInterfaces
+            .FirstOrDefault(i => i.ToDisplayString() == "System.Runtime.CompilerServices.INotifyCompletion");
+        return notifyCompletionInterface != null;
+    }
 }

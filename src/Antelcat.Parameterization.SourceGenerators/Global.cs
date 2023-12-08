@@ -9,6 +9,7 @@ public static class Global
     
     public const string Boolean = $"global::{nameof(System)}.{nameof(System.Boolean)}";
     public const string String = $"global::{nameof(System)}.{nameof(System.String)}";
+    public const string ValueTask = $"global::{nameof(System)}.{nameof(System.Threading)}.{nameof(System.Threading.Tasks)}.{nameof(System.Threading.Tasks.ValueTask)}";
     public const string ValueTuple = $"global::{nameof(System)}.{nameof(System.ValueTuple)}";
     public const string GenericList = $"global::{nameof(System)}.{nameof(System.Collections)}.{nameof(System.Collections.Generic)}.List";
     public const string GenericIReadonlyList = $"global::{nameof(System)}.{nameof(System.Collections)}.{nameof(System.Collections.Generic)}.IReadOnlyList";

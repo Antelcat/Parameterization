@@ -51,9 +51,15 @@ public class ParameterizationGenerator : ClassAttributeBaseGenerator
                 }
             }
 
+            var candidateMethods = GetCandidateMethods().ToImmutableList();
+            if (candidateMethods.Count == 0)
+            {
+                return;
+            }
+
             var parameterTypes = new HashSet<ITypeSymbol>(SymbolEqualityComparer.Default);
             var converterTypes = new HashSet<ITypeSymbol>(SymbolEqualityComparer.Default);
-            foreach (var (method, _) in GetCandidateMethods())
+            foreach (var (method, _) in candidateMethods)
             {
                 foreach (var parameter in method.ParameterList.Parameters)
                 {
@@ -125,8 +131,9 @@ public class ParameterizationGenerator : ClassAttributeBaseGenerator
                     $"new {converterType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)}()");
             }
 
+            var isAsync = false;
             var caseBuilder = new SourceStringBuilder(initialIndentCount: 3);
-            foreach (var (method, commandAttribute) in GetCandidateMethods())
+            foreach (var (method, commandAttribute) in candidateMethods)
             {
                 {
                     var fullName = commandAttribute[nameof(CommandAttribute.FullName)] as string ?? method.Identifier.ValueText;
@@ -223,7 +230,14 @@ public class ParameterizationGenerator : ClassAttributeBaseGenerator
                                     : convertersGenerator.ConvertersMap[syntaxContext.SemanticModel.GetSymbolInfo(x.Item2.Type.NotNull()).Symbol.NotNull<ITypeSymbol>()])
                                 .Select(name => $"{Global.GlobalNamespace}.Converters.{name}Converter"))} }};")
                         .AppendLine(
-                            $"{Global.GlobalNamespace}.Common.ParseArguments(parsedArguments, arguments, argumentNames, defaultValues, argumentConverters);")
+                            $"{Global.GlobalNamespace}.Common.ParseArguments(parsedArguments, arguments, argumentNames, defaultValues, argumentConverters);");
+
+                    if (method.ReturnType.IsAwaitable(syntaxContext.SemanticModel))
+                    {
+                        isAsync = true;
+                        caseBuilder.Append("await ");
+                    }
+                    caseBuilder
                         .AppendLine($"{method.Identifier.ValueText}({string.Join(", ",
                             methodParameters
                                 .Select(p =>
@@ -257,11 +271,11 @@ public class ParameterizationGenerator : ClassAttributeBaseGenerator
                 $$"""
                   {{classAccessModifier}} {{(isClassStatic ? "static" : string.Empty)}} partial class {{className}}
                   {
-                      private static void ExecuteInput({{Global.String}}? input)
+                      private static {{(isAsync ? Global.ValueTask : "void")}} ExecuteInput{{(isAsync ? "Async" : string.Empty)}}({{Global.String}}? input)
                       {
                           if ({{Global.String}}.IsNullOrEmpty(input))
                           {
-                              return;
+                              return{{(isAsync ? " default" : string.Empty)}};
                           }
                   
                           var arguments = new {{Global.GenericList}}<{{Global.String}}>();
@@ -272,10 +286,10 @@ public class ParameterizationGenerator : ClassAttributeBaseGenerator
                               arguments.Add(part);
                           }
                   
-                          ExecuteArguments(arguments);
+                          {{(isAsync ? "return " : string.Empty)}}ExecuteArguments{{(isAsync ? "Async" : string.Empty)}}(arguments);
                       }
                       
-                      private static void ExecuteArguments({{Global.GenericIReadonlyList}}<{{Global.String}}> arguments)
+                      private static {{(isAsync ? $"async {Global.ValueTask}" : "void")}} ExecuteArguments{{(isAsync ? "Async" : string.Empty)}}({{Global.GenericIReadonlyList}}<{{Global.String}}> arguments)
                       {
                           if (arguments.Count == 0)
                           {
