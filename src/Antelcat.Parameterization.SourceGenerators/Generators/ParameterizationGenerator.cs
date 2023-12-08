@@ -37,14 +37,14 @@ public class ParameterizationGenerator : ClassAttributeBaseGenerator
                         modifier.IsKind(SyntaxKind.PublicKeyword) || modifier.IsKind(SyntaxKind.InternalKeyword))
                     .Text ??
                 "internal"; // 默认为 internal
-            var isClassStatic = classDeclarationSyntax.Modifiers.Any(modifier => modifier.IsKind(SyntaxKind.StaticKeyword));
+            var isStaticClass = classDeclarationSyntax.Modifiers.Any(modifier => modifier.IsKind(SyntaxKind.StaticKeyword));
 
             IEnumerable<(MethodDeclarationSyntax, AttributeProxy)> GetCandidateMethods()
             {
                 foreach (var method in classDeclarationSyntax.Members.OfType<MethodDeclarationSyntax>())
                 {
                     // 如果类是static，那么方法也必须是static
-                    if (method.Modifiers.All(modifier => !modifier.IsKind(SyntaxKind.StaticKeyword)) && isClassStatic) continue;
+                    if (method.Modifiers.All(modifier => !modifier.IsKind(SyntaxKind.StaticKeyword)) && isStaticClass) continue;
                     if (method.GetSpecifiedAttributes<CommandAttribute>(syntaxContext.SemanticModel, context.CancellationToken)
                             .FirstOrDefault() is not { } commandAttribute) continue;
                     yield return (method, commandAttribute);
@@ -131,10 +131,16 @@ public class ParameterizationGenerator : ClassAttributeBaseGenerator
                     $"new {converterType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)}()");
             }
 
+            var isStatic = true;
             var isAsync = false;
             var caseBuilder = new SourceStringBuilder(initialIndentCount: 3);
             foreach (var (method, commandAttribute) in candidateMethods)
             {
+                if (method.Modifiers.All(modifier => !modifier.IsKind(SyntaxKind.StaticKeyword)))
+                {
+                    isStatic = false;
+                }
+                
                 {
                     var fullName = commandAttribute[nameof(CommandAttribute.FullName)] as string ?? method.Identifier.ValueText;
                     caseBuilder.AppendLine($"case \"{(caseSensitive ? fullName : fullName.ToLower())}\":");
@@ -269,13 +275,13 @@ public class ParameterizationGenerator : ClassAttributeBaseGenerator
 
             sourceBuilder.Append(
                 $$"""
-                  {{classAccessModifier}} {{(isClassStatic ? "static" : string.Empty)}} partial class {{className}}
+                  {{classAccessModifier}} {{(isStaticClass ? "static" : string.Empty)}} partial class {{className}}
                   {
-                      private static {{(isAsync ? Global.ValueTask : "void")}} ExecuteInput{{(isAsync ? "Async" : string.Empty)}}({{Global.String}}? input)
+                      private {{"static ".If(isStatic)}}{{(isAsync ? Global.ValueTask : "void")}} ExecuteInput{{"Async".If(isAsync)}}({{Global.String}}? input)
                       {
                           if ({{Global.String}}.IsNullOrEmpty(input))
                           {
-                              return{{(isAsync ? " default" : string.Empty)}};
+                              return{{" default".If(isAsync)}};
                           }
                   
                           var arguments = new {{Global.GenericList}}<{{Global.String}}>();
@@ -286,10 +292,10 @@ public class ParameterizationGenerator : ClassAttributeBaseGenerator
                               arguments.Add(part);
                           }
                   
-                          {{(isAsync ? "return " : string.Empty)}}ExecuteArguments{{(isAsync ? "Async" : string.Empty)}}(arguments);
+                          {{"return ".If(isAsync)}}ExecuteArguments{{"Async".If(isAsync)}}(arguments);
                       }
                       
-                      private static {{(isAsync ? $"async {Global.ValueTask}" : "void")}} ExecuteArguments{{(isAsync ? "Async" : string.Empty)}}({{Global.GenericIReadonlyList}}<{{Global.String}}> arguments)
+                      private {{"static ".If(isStatic)}}{{(isAsync ? $"async {Global.ValueTask}" : "void")}} ExecuteArguments{{"Async".If(isAsync)}}({{Global.GenericIReadonlyList}}<{{Global.String}}> arguments)
                       {
                           if (arguments.Count == 0)
                           {
