@@ -4,10 +4,10 @@
         <TargetFramework>netstandard2.0</TargetFramework>
         <LangVersion>preview</LangVersion>
         <Nullable>enable</Nullable>
-        <Version>1.2.1</Version>
+        <Version>1.2.2</Version>
         <Company>Antelcat</Company>
-        <AssemblyVersion>1.2.1</AssemblyVersion>
-        <FileVersion>1.2.1</FileVersion>
+        <AssemblyVersion>1.2.2</AssemblyVersion>
+        <FileVersion>1.2.2</FileVersion>
         <Title>Effortless Command-Line Application Builder</Title>
         <Description>A powerful source generator designed to revolutionize the way you create command-line applications. This tool simplifies the process of building CLI applications by automatically generating parsing methods with just attribute marking on classes and methods.</Description>
         <PackageProjectUrl>https://github.com/Antelcat/Antelcat.Parameterization</PackageProjectUrl>

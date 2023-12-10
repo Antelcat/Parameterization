@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Antelcat.Parameterization.Demo;
 
-[Parameterization]
+[Parameterization(CaseSensitive = true)]
 public static partial class Program
 {
 	public static async Task Main(string[] args)

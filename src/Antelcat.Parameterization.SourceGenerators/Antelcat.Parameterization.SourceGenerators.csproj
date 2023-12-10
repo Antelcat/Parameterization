@@ -6,8 +6,8 @@
         <Nullable>enable</Nullable>
         <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
         <Company>Antelcat</Company>
-        <AssemblyVersion>1.2.1</AssemblyVersion>
-        <FileVersion>1.2.1</FileVersion>
+        <AssemblyVersion>1.2.2</AssemblyVersion>
+        <FileVersion>1.2.2</FileVersion>
         <AnalysisMode>Recommended</AnalysisMode>
     </PropertyGroup>
 

@@ -82,7 +82,8 @@ public static class CommonGenerator
                           IReadOnlyList<string> arguments,
                           IReadOnlyList<(string fullName, string? shortName)> parameterNames,
                           IReadOnlyList<string?> defaultValues,
-                          IReadOnlyList<{{Global.TypeConverter}}> argumentConverters)
+                          IReadOnlyList<{{Global.TypeConverter}}> argumentConverters,
+                          bool ignoreCase)
                       {
                           var isNamedArgumentUsed = false;
                           for (var i = 1; i < arguments.Count; i++)
@@ -96,21 +97,19 @@ public static class CommonGenerator
                               }
                               if (argument.StartsWith("--"))
                               {
-                                  argument = argument[2..];
-                                  argumentIndex = parameterNames.FindIndexOf(x => x.fullName == argument);
+                                  argumentIndex = parameterNames.FindIndexOf(x => argument[2..].Equals(x.fullName, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal));
                                   if (argumentIndex == -1)
                                   {
-                                      throw new ArgumentException($"Argument \"--{argument}\" not found.");
+                                      throw new ArgumentException($"Argument \"{argument}\" not found.");
                                   }
                                   isNamedArgumentUsed = true;
                               }
                               else if (argument.StartsWith('-'))
                               {
-                                  argument = argument[1..];
-                                  argumentIndex = parameterNames.FindIndexOf(x => x.shortName == argument);
+                                  argumentIndex = parameterNames.FindIndexOf(x => argument[1..].Equals(x.shortName, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal));
                                   if (argumentIndex == -1)
                                   {
-                                      throw new ArgumentException($"Argument \"-{argument}\" not found.");
+                                      throw new ArgumentException($"Argument \"{argument}\" not found.");
                                   }
                                   isNamedArgumentUsed = true;
                               }

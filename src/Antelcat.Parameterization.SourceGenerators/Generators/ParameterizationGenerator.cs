@@ -236,7 +236,7 @@ public class ParameterizationGenerator : ClassAttributeBaseGenerator
                                     : convertersGenerator.ConvertersMap[syntaxContext.SemanticModel.GetSymbolInfo(x.Item2.Type.NotNull()).Symbol.NotNull<ITypeSymbol>()])
                                 .Select(name => $"{Global.GlobalNamespace}.Converters.{name}Converter"))} }};")
                         .AppendLine(
-                            $"{Global.GlobalNamespace}.Common.ParseArguments(parsedArguments, arguments, argumentNames, defaultValues, argumentConverters);");
+                            $"{Global.GlobalNamespace}.Common.ParseArguments(parsedArguments, arguments, argumentNames, defaultValues, argumentConverters, {(caseSensitive ? "false" : "true")});");
 
                     if (method.ReturnType.IsAwaitable(syntaxContext.SemanticModel))
                     {
@@ -288,13 +288,14 @@ public class ParameterizationGenerator : ClassAttributeBaseGenerator
                           foreach ({{Global.Match}} match in {{Global.GlobalNamespace}}.Common.CommandRegex.Matches(input))
                           {
                               var part = match.Value;
-                              part = {{Global.GlobalNamespace}}.Common.QuotationRegex.Replace(part, "").Replace("\\\"", "\""){{(caseSensitive ? "" : ".ToLower()")}};
+                              part = {{Global.GlobalNamespace}}.Common.QuotationRegex.Replace(part, "").Replace("\\\"", "\"");
                               arguments.Add(part);
                           }
                   
                           {{"return ".If(isAsync)}}ExecuteArguments{{"Async".If(isAsync)}}(arguments);
                       }
                       
+                      [global::System.Diagnostics.CodeAnalysis.SuppressMessage("RuleCategory", "CS8625:Cannot convert null literal to non-nullable reference type", Justification = "Generated Code")]
                       private {{"static ".If(isStatic)}}{{(isAsync ? $"async {Global.ValueTask}" : "void")}} ExecuteArguments{{"Async".If(isAsync)}}({{Global.GenericIReadonlyList}}<{{Global.String}}> arguments)
                       {
                           if (arguments.Count == 0)
@@ -302,7 +303,7 @@ public class ParameterizationGenerator : ClassAttributeBaseGenerator
                               return;
                           }
                   
-                          switch (arguments[0])
+                          switch (arguments[0]{{".ToLower()".If(!caseSensitive)}})
                           {
                   {{caseBuilder}}
                               default:
