@@ -74,14 +74,19 @@ public static class SyntaxExtension
         return false;
     }
 
-    public static string? ToDisplayName(this SyntaxNode syntax, SemanticModel semanticModel, SymbolDisplayFormat? symbolDisplayFormat = null)
+    public static string ToDisplayName(this SyntaxNode syntax, SemanticModel semanticModel, SymbolDisplayFormat? symbolDisplayFormat = null)
     {
-        return semanticModel.GetSymbolInfo(syntax).Symbol?.ToDisplayString(symbolDisplayFormat);
+        return semanticModel.GetSymbolInfo(syntax).Symbol?.ToDisplayString(symbolDisplayFormat) + "?".If(syntax is NullableTypeSyntax);
     }
 
     public static bool IsArray(this SyntaxNode syntax, SemanticModel semanticModel)
     {
         return semanticModel.GetSymbolInfo(syntax).Symbol is IArrayTypeSymbol;
+    }
+    
+    public static ITypeSymbol? GetArrayElementType(this SyntaxNode syntax, SemanticModel semanticModel)
+    {
+        return (semanticModel.GetSymbolInfo(syntax).Symbol as IArrayTypeSymbol)?.ElementType;
     }
     
     public static bool IsAwaitable(this TypeSyntax type, SemanticModel semanticModel)

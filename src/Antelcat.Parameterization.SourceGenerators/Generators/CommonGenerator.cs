@@ -45,18 +45,18 @@ public static class CommonGenerator
                       }
                   }
                   
-                  public class ParsedArrayArgument : ParsedArgument
+                  public class ParsedArrayArgument<T> : ParsedArgument
                   {
                       public ParsedArrayArgument(string name) : base(name)
                       {
-                          value = new List<object?>(1);
+                          value = new List<T>(1);
                       }
                       
-                      public object?[] ToArray() => ((List<object?>)value!).ToArray();
+                      public T[] ToArray() => ((List<T>)value!).ToArray();
                       
                       public override void SetValue(object? value)
                       {
-                          ((List<object?>)this.value!).Add(value);
+                          ((List<T>)this.value!).Add(((T)value!)!);
                           hasValue = true;
                       }
                   }
@@ -158,7 +158,7 @@ public static class CommonGenerator
                       {
                           if (!parsed.HasValue) throw new ArgumentException($"Argument \"{parsed.Name}\" is not specified.");
                           object? value;
-                          if (parsed is ParsedArrayArgument parsedArray)
+                          if (parsed is ParsedArrayArgument<T> parsedArray)
                           {
                               value = parsedArray.ToArray();
                           }
@@ -173,7 +173,7 @@ public static class CommonGenerator
                       {
                           if (!parsed.HasValue) return defaultValue;
                           object? value;
-                          if (parsed is ParsedArrayArgument parsedArray)
+                          if (parsed is ParsedArrayArgument<T> parsedArray)
                           {
                               value = parsedArray.ToArray();
                           }

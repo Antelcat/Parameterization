@@ -220,7 +220,7 @@ public class ParameterizationGenerator : ClassAttributeBaseGenerator
                         .AppendLine($"var parsedArguments = new {Global.GlobalNamespace}.ParsedArgument[] {{ {string.Join(", ",
                             methodParameters
                                 .Select(p => p.Type.NotNull().IsArray(syntaxContext.SemanticModel) ? 
-                                    $"new {Global.GlobalNamespace}.ParsedArrayArgument(\"{p.Identifier.ValueText}\")" : 
+                                    $"new {Global.GlobalNamespace}.ParsedArrayArgument<{p.Type.NotNull().GetArrayElementType(syntaxContext.SemanticModel)}>(\"{p.Identifier.ValueText}\")" : 
                                     $"new {Global.GlobalNamespace}.ParsedArgument(\"{p.Identifier.ValueText}\")"))} }};")
                         .AppendLine($"var argumentNames = new {Global.ValueTuple}<{Global.String}, {Global.String}?>[] {{ {string.Join(", ",
                             parameterNames
@@ -253,8 +253,8 @@ public class ParameterizationGenerator : ClassAttributeBaseGenerator
                                 ))
                                 .WithIndex()
                                 .Select(x =>
-                                    $"{Global.GlobalNamespace}.Common.ConvertArgument<{x.value.typeName}>(parsedArguments[{x.index}]{(
-                                        x.value.defaultValue == null ? string.Empty : $", {x.value.defaultValue}")})"))});");
+                                    $"{Global.GlobalNamespace}.Common.ConvertArgument<{x.value.typeName}>(parsedArguments[{x.index}]{
+                                        $", {x.value.defaultValue}".If(x.value.defaultValue != null)})"))});");
                 }
                 else
                 {
@@ -295,7 +295,6 @@ public class ParameterizationGenerator : ClassAttributeBaseGenerator
                           {{"return ".If(isAsync)}}ExecuteArguments{{"Async".If(isAsync)}}(arguments);
                       }
                       
-                      [global::System.Diagnostics.CodeAnalysis.SuppressMessage("RuleCategory", "CS8625:Cannot convert null literal to non-nullable reference type", Justification = "Generated Code")]
                       private {{"static ".If(isStatic)}}{{(isAsync ? $"async {Global.ValueTask}" : "void")}} ExecuteArguments{{"Async".If(isAsync)}}({{Global.GenericIReadonlyList}}<{{Global.String}}> arguments)
                       {
                           if (arguments.Count == 0)
