@@ -22,7 +22,7 @@ public static class CommonGenerator
                   {
                       public string Name { get; }
                       
-                      public object? Value => value;
+                      public virtual object? Value => value;
                       public bool HasValue => hasValue;
                       
                       protected object? value;
@@ -52,7 +52,7 @@ public static class CommonGenerator
                           value = new List<T>(1);
                       }
                       
-                      public T[] ToArray() => ((List<T>)value!).ToArray();
+                      public override object? Value => ((List<T>)value!).ToArray();
                       
                       public override void SetValue(object? value)
                       {
@@ -157,31 +157,13 @@ public static class CommonGenerator
                       public static T ConvertArgument<T>(ParsedArgument parsed)
                       {
                           if (!parsed.HasValue) throw new ArgumentException($"Argument \"{parsed.Name}\" is not specified.");
-                          object? value;
-                          if (parsed is ParsedArrayArgument<T> parsedArray)
-                          {
-                              value = parsedArray.ToArray();
-                          }
-                          else 
-                          {
-                              value = parsed.Value;
-                          }
-                          return value is T result ? result : throw new ArgumentException($"Argument \"{parsed.Name}\" is not of type {typeof(T).FullName}.");
+                          return parsed.Value is T result ? result : throw new ArgumentException($"Argument \"{parsed.Name}\" is not of type {typeof(T).FullName}.");
                       }
                       
                       public static T ConvertArgument<T>(ParsedArgument parsed, T defaultValue)
                       {
                           if (!parsed.HasValue) return defaultValue;
-                          object? value;
-                          if (parsed is ParsedArrayArgument<T> parsedArray)
-                          {
-                              value = parsedArray.ToArray();
-                          }
-                          else 
-                          {
-                              value = parsed.Value;
-                          }
-                          return value is T result ? result : throw new ArgumentException($"Argument \"{parsed.Name}\" is not of type {typeof(T).FullName}.");
+                          return parsed.Value is T result ? result : throw new ArgumentException($"Argument \"{parsed.Name}\" is not of type {typeof(T).FullName}.");
                       }
                   }
               }
