@@ -249,7 +249,7 @@ public class ParameterizationGenerator : ClassAttributeBaseGenerator
                                 .Select(p =>
                                 (
                                     typeName: p.Type.NotNull().ToDisplayName(syntaxContext.SemanticModel),
-                                    defaultValue: p.Default?.Value.ToString()
+                                    defaultValue: p.Default?.Value.ToDisplayName(syntaxContext.SemanticModel).IfNullOrEmpty(p.Default?.Value.ToString())
                                 ))
                                 .WithIndex()
                                 .Select(x =>

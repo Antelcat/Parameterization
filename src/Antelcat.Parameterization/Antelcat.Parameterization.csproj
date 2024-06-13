@@ -6,8 +6,8 @@
         <Nullable>enable</Nullable>
         <Version>1.2.4</Version>
         <Company>Antelcat</Company>
-        <AssemblyVersion>1.2.4</AssemblyVersion>
-        <FileVersion>1.2.4</FileVersion>
+        <AssemblyVersion>1.2.5</AssemblyVersion>
+        <FileVersion>1.2.5</FileVersion>
         <Title>Effortless Command-Line Application Builder</Title>
         <Description>A powerful source generator designed to revolutionize the way you create command-line applications. This tool simplifies the process of building CLI applications by automatically generating parsing methods with just attribute marking on classes and methods.</Description>
         <PackageProjectUrl>https://github.com/Antelcat/Antelcat.Parameterization</PackageProjectUrl>
